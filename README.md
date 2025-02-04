@@ -7,12 +7,12 @@ This repository contains Kubernetes configuration files for deploying a microser
 ```
 .
 ├── configserver/           # Configuration Server Service
-├── gateway/               # API Gateway Service
-├── mysql/                 # MySQL Database Configuration
-├── orderservice/         # Order Management Service
-├── productservice/       # Product Management Service
-├── serviceregistry/      # Service Registry (Eureka)
-└── userservice/          # User Management Service
+├── gateway/                # API Gateway Service
+├── mysql/                  # MySQL Database Configuration
+├── orderservice/           # Order Management Service
+├── productservice/         # Product Management Service
+├── serviceregistry/        # Service Registry (Eureka)
+└── userservice/            # User Management Service
 ```
 
 ## Services Overview

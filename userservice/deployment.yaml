@@ -19,6 +19,14 @@ spec:
           image: harshyadav02/user-service
           ports:
             - containerPort: 8083
+          resources:
+            requests:
+              cpu: "100m" # Minimum CPU required
+              memory: "256Mi" # Minimum memory required
+            limits:
+              cpu: "500m" # Max CPU before throttling
+              memory: "512Mi" # Max memory before throttling
+
           env:
             # Reading Host name form configMap
             - name: MYSQL_HOST

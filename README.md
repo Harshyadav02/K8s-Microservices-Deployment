@@ -46,6 +46,19 @@ Each service (order, product, user) contains:
 - Kubernetes cluster (local or cloud-based)
 - kubectl CLI tool
 - Helm (optional, for package management)
+- Metrics Server (required for HPA functionality)
+
+## Initial Setup
+
+1. Install Metrics Server (required for HPA to work):
+```bash
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+2. Verify Metrics Server installation:
+```bash
+kubectl get deployment metrics-server -n kube-system
+```
 
 ## Deployment Instructions
 
@@ -83,16 +96,26 @@ kubectl apply -f gateway/
 - Sensitive data is stored in `mysql/secret.yaml`
 - Persistent storage is configured via `pv.yaml` and `pvc.yaml`
 
+### Metrics Server Configuration
+The Metrics Server is required for collecting resource metrics from Kubelets and exposing them through the Kubernetes metrics API. This enables:
+- Horizontal Pod Autoscaling
+- Resource usage monitoring
+- Performance monitoring
+
 ### Autoscaling
-All services are configured with Horizontal Pod Autoscaling (HPA) for automatic scaling based on CPU/Memory usage.
+All services are configured with Horizontal Pod Autoscaling (HPA) for automatic scaling based on CPU/Memory usage. To use HPA:
+1. Ensure Metrics Server is running
+2. Check HPA status: `kubectl get hpa`
+3. Monitor resource metrics: `kubectl top pods`
 
 ## Service Dependencies
 
-1. Config Server must be running before other services
-2. Service Registry should be available for service discovery
-3. MySQL database must be running before the microservices
-4. Microservices can be deployed in any order after the above
-5. API Gateway should be deployed last
+1. Metrics Server must be running for HPA functionality
+2. Config Server must be running before other services
+3. Service Registry should be available for service discovery
+4. MySQL database must be running before the microservices
+5. Microservices can be deployed in any order after the above
+6. API Gateway should be deployed last
 
 ## Monitoring and Maintenance
 
@@ -100,6 +123,8 @@ All services are configured with Horizontal Pod Autoscaling (HPA) for automatic 
 - Check services: `kubectl get services`
 - View logs: `kubectl logs <pod-name>`
 - Scale manually: `kubectl scale deployment/<deployment-name> --replicas=<number>`
+- Check resource usage: `kubectl top pods`
+- Monitor HPA: `kubectl get hpa --watch`
 
 ## Troubleshooting
 
@@ -118,6 +143,25 @@ kubectl describe service <service-name>
 3. For pod issues:
 ```bash
 kubectl describe pod <pod-name>
+```
+
+4. For Metrics Server issues:
+```bash
+# Check Metrics Server status
+kubectl get pods -n kube-system | grep metrics-server
+# Check Metrics Server logs
+kubectl logs -n kube-system deployment/metrics-server
+# Verify metrics availability
+kubectl top nodes
+kubectl top pods
+```
+
+5. For HPA issues:
+```bash
+# Check HPA status
+kubectl describe hpa <hpa-name>
+# Verify HPA metrics
+kubectl get hpa
 ```
 
 ## License
